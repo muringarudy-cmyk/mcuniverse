@@ -1,0 +1,178 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCUNIVERSE | Marvel Movies & Series</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#101010;color:white;font-family:Arial,sans-serif}
+header{padding:22px 6%;background:#191919;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;border-bottom:1px solid #333}
+.logo{font-size:25px;font-weight:900;color:#e62429;letter-spacing:1px}
+nav a{color:white;text-decoration:none;margin-left:20px}
+.hero{padding:65px 6%;background:linear-gradient(90deg,#101010,#271012)}
+.hero p{color:#bbb}
+.hero h1{font-size:clamp(38px,7vw,68px);margin:12px 0}
+.hero span{color:#e62429}
+.search{padding:20px 6%;display:flex;gap:10px;flex-wrap:wrap}
+input,select,button{padding:12px;border-radius:5px;border:1px solid #444;background:#202020;color:white}
+input{flex:1;min-width:180px}
+button{cursor:pointer}
+button:hover{background:#e62429}
+main{padding:0 6% 50px}
+section{margin-bottom:50px;scroll-margin-top:15px}
+h2{border-left:4px solid #e62429;padding-left:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:20px}
+.card{background:#1b1b1b;border-radius:7px;overflow:hidden;transition:.2s}
+.card:hover{transform:translateY(-5px)}
+.card img{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;background:#292929}
+.card h3{font-size:14px;padding:0 10px}
+.card p{font-size:12px;color:#bbb;padding:0 10px 10px}
+footer{text-align:center;padding:25px;color:#999;background:#191919;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">MCUNIVERSE</div>
+  <nav><a href="#movies">Movies</a><a href="#series">Series</a></nav>
+</header>
+
+<div class="hero">
+  <p>WELCOME TO YOUR MARVEL WORLD</p>
+  <h1>ONE UNIVERSE.<br><span>INFINITE STORIES.</span></h1>
+  <p>Explore Marvel superheroes, movies and television series.</p>
+</div>
+
+<div class="search">
+  <input id="search" placeholder="Search Marvel movies and series...">
+  <select id="category">
+    <option value="all">All titles</option>
+    <option value="movie">Movies</option>
+    <option value="tv">Series</option>
+  </select>
+  <select id="sort">
+    <option value="popular">Default order</option>
+    <option value="az">Name A–Z</option>
+    <option value="year">Newest first</option>
+  </select>
+</div>
+
+<main>
+<section id="movies">
+<h2>🎬 Marvel Movies</h2>
+<div class="grid" id="movieGrid"></div>
+</section>
+<section id="series">
+<h2>📺 Marvel Series</h2>
+<div class="grid" id="seriesGrid"></div>
+</section>
+</main>
+
+<footer>
+<strong>MCUNIVERSE</strong>
+<p>A fan-made Marvel catalogue. Not affiliated with Marvel.</p>
+<p>Movie data and images are provided by TMDB.</p>
+</footer>
+
+<script>
+const token = "";
+const imageBase = "https://image.tmdb.org/t/p/w500";
+
+const movies = [
+[Iron Man,2008],
+[The Incredible Hulk,2008],
+[Iron Man 2,2010],
+[Thor,2011],
+[Captain America: The First Avenger,2011],
+[The Avengers,2012],
+[Iron Man 3,2013],
+[Thor: The Dark World,2013],
+[Captain America: The Winter Soldier,2014],
+[Guardians of the Galaxy,2014],
+[Avengers: Age of Ultron,2015],
+[Ant-Man,2015],
+[Captain America: Civil War,2016],
+[Doctor Strange,2016],
+[Guardians of the Galaxy Vol. 2,2017],
+[Spider-Man: Homecoming,2017],
+[Thor: Ragnarok,2017],
+[Black Panther,2018],
+[Avengers: Infinity War,2018],
+[Ant-Man and the Wasp,2018],
+[Captain Marvel,2019],
+[Avengers: Endgame,2019],
+[Spider-Man: Far From Home,2019],
+[Black Widow,2021],
+[Shang-Chi and the Legend of the Ten Rings,2021],
+[Eternals,2021],
+[Spider-Man: No Way Home,2021],
+[Doctor Strange in the Multiverse of Madness,2022],
+[Thor: Love and Thunder,2022],
+[Black Panther: Wakanda Forever,2022],
+[Ant-Man and the Wasp: Quantumania,2023],
+[Guardians of the Galaxy Vol. 3,2023],
+[The Marvels,2023],
+[Deadpool & Wolverine,2024],
+[Captain America: Brave New World,2025],
+[Thunderbolts*,2025]
+].map(([title,year])=>({title,year,type:"movie"}));
+
+const shows = [
+["WandaVision",2021],["The Falcon and the Winter Soldier",2021],
+["Loki",2021],["What If...?",2021],["Hawkeye",2021],
+["Moon Knight",2022],["Ms. Marvel",2022],
+["She-Hulk: Attorney at Law",2022],["Secret Invasion",2023],
+["Echo",2024],["Agatha All Along",2024],
+["Daredevil: Born Again",2025]
+].map(([title,year])=>({title,year,type:"tv"}));
+
+let titles = [...movies,...shows];
+
+function card(item){
+ const poster=item.poster
+ ? `<img src="${imageBase+item.poster}" alt="${item.title} poster" loading="lazy">`
+ : `<div style="aspect-ratio:2/3;display:grid;place-items:center;background:#292929;color:#e62429;font-weight:bold;text-align:center;padding:12px">MARVEL<br>${item.title}</div>`;
+ return `<article class="card">${poster}<h3>${item.title}</h3><p>${item.year} · ${item.type==="movie"?"Movie":"Series"}</p></article>`;
+}
+
+function render(){
+ const q=document.getElementById("search").value.toLowerCase();
+ const category=document.getElementById("category").value;
+ const sort=document.getElementById("sort").value;
+ let filtered=titles.filter(t=>t.title.toLowerCase().includes(q)&&(category==="all"||t.type===category));
+ if(sort==="az")filtered.sort((a,b)=>a.title.localeCompare(b.title));
+ if(sort==="year")filtered.sort((a,b)=>b.year-a.year);
+ document.getElementById("movieGrid").innerHTML=filtered.filter(t=>t.type==="movie").map(card).join("");
+ document.getElementById("seriesGrid").innerHTML=filtered.filter(t=>t.type==="tv").map(card).join("");
+ document.getElementById("movies").style.display=category==="tv"?"none":"block";
+ document.getElementById("series").style.display=category==="movie"?"none":"block";
+}
+
+["search","category","sort"].forEach(id=>document.getElementById(id).addEventListener(id==="search"?"input":"change",render));
+
+async function loadTMDB(){
+ if(!token)return;
+ try{
+  const headers={Authorization:"Bearer "+token,accept:"application/json"};
+  const companyIds={movie:"420",tv:"420|38679"};
+  const requests=await Promise.all(["movie","tv"].map(async type=>{
+   const response=await fetch(`https://api.themoviedb.org/3/discover/${type}?with_companies=${companyIds[type]}&sort_by=popularity.desc&page=1`,{headers});
+   if(!response.ok)throw Error("TMDB request failed");
+   const data=await response.json();
+   return data.results.map(item=>({
+    title:type==="movie"?item.title:item.name,
+    year:Number((type==="movie"?item.release_date:item.first_air_date||"").slice(0,4))||0,
+    type,poster:item.poster_path
+   }));
+  }));
+  titles=requests.flat();
+  render();
+ }catch(e){console.error("TMDB could not load:",e)}
+}
+render();
+loadTMDB();
+</script>
+</body>
+</html>
+const token = "PASTE_YOUR_TMDB_READ_ACCESS_TOKEN_HERE";
